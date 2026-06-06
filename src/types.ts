@@ -18,3 +18,12 @@ export interface Product extends ProductMutation {
 export interface ApiProductsList {
   [id: string]: ProductMutation;
 }
+
+export interface ConfirmationModalProps {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+  isLoading?: boolean;
+}

@@ -4,12 +4,17 @@ import type { Product, ApiProductsList } from "../types";
 import axiosApi from "../api/axiosApi";
 import { CATEGORIES, PRODUCT_IMAGE_PLACEHOLDER } from "../constants";
 import { toast } from "react-toastify";
+import ModalConfirm from "../components/UI/ModalConfirm";
 
 const Products = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(
+    null,
+  );
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -44,21 +49,29 @@ const Products = () => {
 
   const currentCategory = CATEGORIES.find((cat) => cat.id === categoryId);
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
+    setDeletingProductId(id);
+  };
 
-    if (!window.confirm("Are you sure you want to delete this product?")) {
-      return;
-    }
+  const handleConfirmDelete = async () => {
+    if (!deletingProductId) return;
 
     try {
-      await axiosApi.delete(`/products/${id}.json`);
-      setProducts((prev) => prev.filter((product) => product.id !== id));
+      setLoading(true);
+      await axiosApi.delete(`/products/${deletingProductId}.json`);
+
+      setProducts((prev) =>
+        prev.filter((product) => product.id !== deletingProductId),
+      );
       toast.success("Product deleted successfully");
     } catch (error) {
       console.error("Failed to delete product:", error);
       toast.error("Could not delete product from server");
+    } finally {
+      setDeletingProductId(null);
+      setLoading(false);
     }
   };
 
@@ -142,7 +155,7 @@ const Products = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={(e) => handleDelete(e, product.id)}
+                    onClick={(e) => handleDeleteClick(e, product.id)}
                     className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
                   >
                     Delete
@@ -153,6 +166,14 @@ const Products = () => {
           ))}
         </div>
       )}
+      <ModalConfirm
+        isOpen={deletingProductId !== null}
+        title="Delete Product"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        onCancel={() => setDeletingProductId(null)}
+        onConfirm={handleConfirmDelete}
+        isLoading={loading}
+      />
     </div>
   );
 };
