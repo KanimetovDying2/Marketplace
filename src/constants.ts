@@ -1,11 +1,21 @@
 import type { Category } from "./types";
 
-export const CATEGORIES: Category[] = [
-  { id: "fruits-veg", title: "Fruits & Vegetables" },
-  { id: "dairy", title: "Dairy Products" },
-  { id: "meat", title: "Meat & Poultry" },
-  { id: "bakery", title: "Bakery & Sweets" },
-  { id: "beverages", title: "Beverages" },
+import fruitsVegImg from "./assets/images/fruits-veg.jpg";
+import dairyImg from "./assets/images/dairy.jpg";
+import meatImg from "./assets/images/meat.jpg";
+import bakeryImg from "./assets/images/bakery.jpg";
+import beveragesImg from "./assets/images/beverages.jpg";
+
+export const CATEGORIES: (Category & { defaultImage: string })[] = [
+  {
+    id: "fruits-veg",
+    title: "Fruits & Vegetables",
+    defaultImage: fruitsVegImg,
+  },
+  { id: "dairy", title: "Dairy Products", defaultImage: dairyImg },
+  { id: "meat", title: "Meat & Poultry", defaultImage: meatImg },
+  { id: "bakery", title: "Bakery & Sweets", defaultImage: bakeryImg },
+  { id: "beverages", title: "Beverages", defaultImage: beveragesImg },
 ];
 
 export const PRODUCT_IMAGE_PLACEHOLDER =

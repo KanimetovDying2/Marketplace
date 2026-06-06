@@ -58,7 +58,7 @@ const ProductDetail = () => {
             src={
               product.picture.trim() !== ""
                 ? product.picture
-                : PRODUCT_IMAGE_PLACEHOLDER
+                : currentCategory?.defaultImage || PRODUCT_IMAGE_PLACEHOLDER
             }
             alt={product.title}
             className="w-full h-full object-cover"

@@ -117,53 +117,60 @@ const Products = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <Link
-              key={product.id}
-              to={`/products/${product.id}`}
-              className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md hover:border-emerald-500/30 transition-all cursor-pointer"
-            >
-              <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                <img
-                  src={
-                    product.picture.trim() !== ""
-                      ? product.picture
-                      : PRODUCT_IMAGE_PLACEHOLDER
-                  }
-                  alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute bottom-3 right-3 bg-gray-900/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md">
-                  {product.price} KGS
-                </div>
-              </div>
+          {products.map((product) => {
+            const productCategory = CATEGORIES.find(
+              (cat) => cat.id === product.type,
+            );
 
-              <div className="p-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
-                    {product.title}
-                  </h3>
+            return (
+              <Link
+                key={product.id}
+                to={`/products/${product.id}`}
+                className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md hover:border-emerald-500/30 transition-all cursor-pointer"
+              >
+                <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                  <img
+                    src={
+                      product.picture.trim() !== ""
+                        ? product.picture
+                        : productCategory?.defaultImage ||
+                          PRODUCT_IMAGE_PLACEHOLDER
+                    }
+                    alt={product.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-3 right-3 bg-gray-900/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                    {product.price} KGS
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={(e) => handleEditNavigate(e, product.id)}
-                    className="py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => handleDeleteClick(e, product.id)}
-                    className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
-                  >
-                    Delete
-                  </button>
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                      {product.title}
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={(e) => handleEditNavigate(e, product.id)}
+                      className="py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteClick(e, product.id)}
+                      className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
       <ModalConfirm
