@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Layout from "./components/Layout";
 import Products from "./containers/Products";
 import ProductForm from "./components/ProductForm";
@@ -6,7 +8,12 @@ import ProductDetail from "./components/ProductDetail";
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        theme="colored"
+      />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Products />} />
@@ -17,7 +24,7 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 

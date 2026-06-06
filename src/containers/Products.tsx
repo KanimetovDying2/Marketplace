@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import type { Product, ApiProductsList } from "../types";
 import axiosApi from "../api/axiosApi";
-import { CATEGORIES } from "../constants";
+import { CATEGORIES, PRODUCT_IMAGE_PLACEHOLDER } from "../constants";
+import { toast } from "react-toastify";
 
 const Products = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -31,6 +32,7 @@ const Products = () => {
       }
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      toast.error("Failed to sync products from server");
     } finally {
       setLoading(false);
     }
@@ -53,8 +55,10 @@ const Products = () => {
     try {
       await axiosApi.delete(`/products/${id}.json`);
       setProducts((prev) => prev.filter((product) => product.id !== id));
+      toast.success("Product deleted successfully");
     } catch (error) {
       console.error("Failed to delete product:", error);
+      toast.error("Could not delete product from server");
     }
   };
 
@@ -107,17 +111,15 @@ const Products = () => {
               className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md hover:border-emerald-500/30 transition-all cursor-pointer"
             >
               <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                {product.picture ? (
-                  <img
-                    src={product.picture}
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    No image
-                  </div>
-                )}
+                <img
+                  src={
+                    product.picture.trim() !== ""
+                      ? product.picture
+                      : PRODUCT_IMAGE_PLACEHOLDER
+                  }
+                  alt={product.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
                 <div className="absolute bottom-3 right-3 bg-gray-900/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md">
                   {product.price} KGS
                 </div>

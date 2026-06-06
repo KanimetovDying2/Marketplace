@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import type { ProductMutation } from "../types";
-import { CATEGORIES } from "../constants";
+import { CATEGORIES, PRODUCT_IMAGE_PLACEHOLDER } from "../constants";
 import axiosApi from "../api/axiosApi";
 
 const ProductDetail = () => {
@@ -22,10 +23,12 @@ const ProductDetail = () => {
         if (response.data) {
           setProduct(response.data);
         } else {
+          toast.error("Product doesn't exist");
           navigate("/");
         }
       } catch (error) {
         console.error("Failed to fetch product details:", error);
+        toast.error("Failed to load details");
       } finally {
         setLoading(false);
       }
@@ -51,17 +54,15 @@ const ProductDetail = () => {
     <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8">
         <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center relative">
-          {product.picture ? (
-            <img
-              src={product.picture}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-              No Image Available
-            </span>
-          )}
+          <img
+            src={
+              product.picture.trim() !== ""
+                ? product.picture
+                : PRODUCT_IMAGE_PLACEHOLDER
+            }
+            alt={product.title}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         <div className="flex flex-col justify-between">

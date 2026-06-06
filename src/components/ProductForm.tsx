@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import type { ProductMutation } from "../types";
 import { CATEGORIES } from "../constants";
 import axiosApi from "../api/axiosApi";
@@ -30,10 +31,12 @@ const ProductForm = () => {
         if (response.data) {
           setForm(response.data);
         } else {
+          toast.error("Product not found!");
           navigate("/");
         }
       } catch (error) {
         console.error("Failed to fetch product details:", error);
+        toast.error("Error loading product data");
       } finally {
         setLoading(false);
       }
@@ -68,10 +71,18 @@ const ProductForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.title.trim() || !form.type || form.price <= 0) {
-      alert(
-        "Please fill in all required fields and ensure price is greater than 0.",
-      );
+    if (!form.title.trim()) {
+      toast.warning("Title field is required!");
+      return;
+    }
+
+    if (!form.type) {
+      toast.warning("Please select a product category type!");
+      return;
+    }
+
+    if (form.price <= 0) {
+      toast.warning("Price must be greater than 0 KGS!");
       return;
     }
 
@@ -80,13 +91,16 @@ const ProductForm = () => {
 
       if (id) {
         await axiosApi.put(`/products/${id}.json`, form);
+        toast.success("Product updated successfully!");
+        navigate(`/products/category/${form.type}`);
       } else {
         await axiosApi.post("/products.json", form);
+        toast.success("New product added successfully!");
+        navigate("/");
       }
-
-      navigate("/");
     } catch (error) {
       console.error("Failed to submit product:", error);
+      toast.error("Something went wrong while saving.");
     } finally {
       setIsSubmitting(false);
     }
