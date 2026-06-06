@@ -20,7 +20,28 @@ const ProductForm = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!id) {
+    const fetchProductData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosApi.get<ProductMutation | null>(
+          `/products/${id}.json`,
+        );
+
+        if (response.data) {
+          setForm(response.data);
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Failed to fetch product details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProductData();
+    } else {
       setForm({
         title: "",
         type: "",
@@ -29,9 +50,8 @@ const ProductForm = () => {
         price: 0,
       });
     }
-  }, [id]);
+  }, [id, navigate]);
 
-  
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -59,9 +79,11 @@ const ProductForm = () => {
       setIsSubmitting(true);
 
       if (id) {
+        await axiosApi.put(`/products/${id}.json`, form);
       } else {
         await axiosApi.post("/products.json", form);
       }
+
       navigate("/");
     } catch (error) {
       console.error("Failed to submit product:", error);
@@ -170,7 +192,7 @@ const ProductForm = () => {
             disabled={isSubmitting}
             className="h-10 px-5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow-xs hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {isSubmitting ? "Saving..." : id ? "Save product" : "Add product"}
+            {isSubmitting ? "Saving..." : id ? "Save changes" : "Add product"}
           </button>
           <button
             type="button"

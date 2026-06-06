@@ -117,9 +117,6 @@ const Products = () => {
                   <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
                     {product.title}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[2rem]">
-                    {product.description || "No description provided."}
-                  </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
