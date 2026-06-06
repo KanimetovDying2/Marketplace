@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import type { ProductMutation } from "../types";
 import { CATEGORIES } from "../constants";
 import axiosApi from "../api/axiosApi";
+import Spinner from "./UI/Spinner";
 
 const ProductForm = () => {
   const navigate = useNavigate();
@@ -107,11 +108,7 @@ const ProductForm = () => {
   };
 
   if (loading) {
-    return (
-      <div className="text-center py-4 font-medium text-gray-500">
-        Loading product data...
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (

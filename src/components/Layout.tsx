@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ withSidebar = false }) => {
             to="/"
             className="text-xl font-bold tracking-tight text-emerald-600 hover:text-emerald-700 transition-colors"
           >
-            Global products
+            Marketplace
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium">
             <Link

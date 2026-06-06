@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import type { ProductMutation } from "../types";
 import { CATEGORIES, PRODUCT_IMAGE_PLACEHOLDER } from "../constants";
 import axiosApi from "../api/axiosApi";
+import Spinner from "./UI/Spinner";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,11 +41,7 @@ const ProductDetail = () => {
   }, [id, navigate]);
 
   if (loading) {
-    return (
-      <div className="text-center py-12 font-medium text-gray-500">
-        Loading product details...
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (!product) return null;

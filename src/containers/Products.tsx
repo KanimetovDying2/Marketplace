@@ -5,6 +5,7 @@ import axiosApi from "../api/axiosApi";
 import { CATEGORIES, PRODUCT_IMAGE_PLACEHOLDER } from "../constants";
 import { toast } from "react-toastify";
 import ModalConfirm from "../components/UI/ModalConfirm";
+import Spinner from "../components/UI/Spinner";
 
 const Products = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -82,11 +83,7 @@ const Products = () => {
   };
 
   if (loading) {
-    return (
-      <div className="text-center py-12 font-medium text-gray-500">
-        Loading products...
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
