@@ -31,6 +31,7 @@ const ProductForm = () => {
     }
   }, [id]);
 
+  
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement

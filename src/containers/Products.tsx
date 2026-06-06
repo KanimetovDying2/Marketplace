@@ -1,8 +1,155 @@
+import { useState, useEffect, useCallback } from "react";
+import { useParams, Link } from "react-router-dom";
+import type { Product, ApiProductsList } from "../types";
+import axiosApi from "../api/axiosApi";
+import { CATEGORIES } from "../constants";
+
 const Products = () => {
+  const { categoryId } = useParams<{ categoryId: string }>();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const url = categoryId
+        ? `/products.json?orderBy="type"&equalTo="${categoryId}"`
+        : "/products.json";
+
+      const response = await axiosApi.get<ApiProductsList | null>(url);
+
+      if (response.data) {
+        const productsArray = Object.keys(response.data).map((key) => ({
+          id: key,
+          ...response.data![key],
+        }));
+        setProducts(productsArray);
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryId]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const currentCategory = CATEGORIES.find((cat) => cat.id === categoryId);
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    try {
+      await axiosApi.delete(`/products/${id}.json`);
+      setProducts((prev) => prev.filter((product) => product.id !== id));
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-12 font-medium text-gray-500">
+        Loading products...
+      </div>
+    );
+  }
+
   return (
-    <h1 className="text-xl font-bold">
-      Products List Container (Main & Categories)
-    </h1>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          {categoryId
+            ? `Category: ${currentCategory ? currentCategory.title : categoryId}`
+            : "All Products"}
+        </h1>
+        <span className="text-sm font-medium text-gray-500">
+          Found {products.length}{" "}
+          {products.length === 1 ? "product" : "products"}
+        </span>
+      </div>
+
+      {products.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl">
+          <p className="text-gray-500 font-medium">
+            No products found in this category.
+          </p>
+          <Link
+            to="/products/add"
+            className="mt-3 inline-flex text-sm font-semibold text-emerald-600 hover:text-emerald-700"
+          >
+            Add first product &rarr;
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md transition-all"
+            >
+              <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                {product.picture ? (
+                  <img
+                    src={product.picture}
+                    alt={product.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    No image
+                  </div>
+                )}
+                <div className="absolute bottom-3 right-3 bg-gray-900/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                  {product.price} KGS
+                </div>
+              </div>
+
+              <div className="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                    {product.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[2rem]">
+                    {product.description || "No description provided."}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
+                  <Link
+                    to={`/products/${product.id}`}
+                    className="py-2 rounded-md bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    View
+                  </Link>
+                  <Link
+                    to={`/products/${product.id}/edit`}
+                    className="py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(product.id)}
+                    className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 cursor-pointer transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
+
 export default Products;
