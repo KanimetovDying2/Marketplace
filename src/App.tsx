@@ -15,9 +15,12 @@ const App = () => {
         theme="colored"
       />
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<Layout withSidebar />}>
           <Route index element={<Products />} />
           <Route path="products/category/:categoryId" element={<Products />} />
+        </Route>
+
+        <Route element={<Layout withSidebar={false} />}>
           <Route path="products/add" element={<ProductForm />} />
           <Route path="products/:id/edit" element={<ProductForm />} />
           <Route path="products/:id" element={<ProductDetail />} />

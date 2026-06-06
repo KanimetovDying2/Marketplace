@@ -27,3 +27,7 @@ export interface ConfirmationModalProps {
   onConfirm: () => void;
   isLoading?: boolean;
 }
+
+export interface LayoutProps {
+  withSidebar?: boolean;
+}

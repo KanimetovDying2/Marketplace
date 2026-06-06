@@ -1,7 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import type { LayoutProps } from "../types";
 
-const Layout = () => {
+const Layout: React.FC<LayoutProps> = ({ withSidebar = false }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col antialiased text-gray-950">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-xs">
@@ -31,11 +32,15 @@ const Layout = () => {
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 flex gap-8">
-        <aside className="w-64 shrink-0">
-          <Sidebar />
-        </aside>
+        {withSidebar && (
+          <aside className="w-64 shrink-0">
+            <Sidebar />
+          </aside>
+        )}
 
-        <section className="flex-1 bg-white p-6 rounded-xl border border-gray-200 shadow-xs">
+        <section
+          className={`flex-1 bg-white p-6 rounded-xl border border-gray-200 shadow-xs ${!withSidebar ? "max-w-4xl mx-auto w-full" : ""}`}
+        >
           <Outlet />
         </section>
       </main>
