@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import type { Product, ApiProductsList } from "../types";
 import axiosApi from "../api/axiosApi";
 import { CATEGORIES } from "../constants";
 
 const Products = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -41,7 +42,10 @@ const Products = () => {
 
   const currentCategory = CATEGORIES.find((cat) => cat.id === categoryId);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!window.confirm("Are you sure you want to delete this product?")) {
       return;
     }
@@ -52,6 +56,12 @@ const Products = () => {
     } catch (error) {
       console.error("Failed to delete product:", error);
     }
+  };
+
+  const handleEditNavigate = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/products/${id}/edit`);
   };
 
   if (loading) {
@@ -91,9 +101,10 @@ const Products = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
-            <div
+            <Link
               key={product.id}
-              className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md transition-all"
+              to={`/products/${product.id}`}
+              className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white flex flex-col group hover:shadow-md hover:border-emerald-500/30 transition-all cursor-pointer"
             >
               <div className="aspect-video bg-gray-100 relative overflow-hidden">
                 {product.picture ? (
@@ -119,29 +130,24 @@ const Products = () => {
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
-                  <Link
-                    to={`/products/${product.id}`}
-                    className="py-2 rounded-md bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    to={`/products/${product.id}/edit`}
-                    className="py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
-                  >
-                    Edit
-                  </Link>
+                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-100 text-center text-xs font-semibold">
                   <button
                     type="button"
-                    onClick={() => handleDelete(product.id)}
-                    className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 cursor-pointer transition-colors"
+                    onClick={(e) => handleEditNavigate(e, product.id)}
+                    className="py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors cursor-pointer"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDelete(e, product.id)}
+                    className="py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
                   >
                     Delete
                   </button>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
